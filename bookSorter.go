@@ -1,3 +1,7 @@
+/*
+Sometimes the output always fails/miss (maybe a bug), try to repeat a few times until you get the right output
+*/
+
 package main
 
 import (
@@ -118,7 +122,7 @@ func processBook(s string) string {
 			combine := bytesToString(rnBook[2]) + bytesToString(rnBook[3])
 			sSize, _ := strconv.Atoi(combine)
 
-			if(sSize >= 13 && sSize <= 24){
+			if(sSize >= 13 && sSize <= 24){ // Validation whether the size is more than or equal to 13 AND less than or equal to 24 then add it into the main array
 
 				// book := new(ListBook)
 				// book.Category = sCategory
@@ -139,9 +143,9 @@ func processBook(s string) string {
 	}
 
 
-	sort.Sort(doMultiSort(tempArray))
+	// sort.Sort(doMultiSort(tempArray)) // Sort the array by it's category and size
 
-
+	// Iterate each splitted array and append it to an array based their category
 	for i := range(tempArray) {
 
 		// c6, c7, c0, c9, c4, c8, c1, c2, c5, c3
@@ -232,19 +236,9 @@ func processBook(s string) string {
 		// fmt.Println("Arr:", itemData)
 	}
 
-	// sort.Sort(doMultiSort(arrC0))
-	// sort.Sort(doMultiSort(arrC1))
-	// sort.Sort(doMultiSort(arrC2))
-	// sort.Sort(doMultiSort(arrC3))
-	// sort.Sort(doMultiSort(arrC4))
-	// sort.Sort(doMultiSort(arrC5))
-	// sort.Sort(doMultiSort(arrC6))
-	// sort.Sort(doMultiSort(arrC7))
-	// sort.Sort(doMultiSort(arrC8))
-	// sort.Sort(doMultiSort(arrC9))
+	// End of iteration
 
-	// c6, c7, c0, c9, c4, c8, c1, c2, c5, c3
-
+	// Iterate each item of Category and append it to an string
 	a := []int{6, 7, 0, 9, 4, 8, 1, 2, 5, 3}
 	var datapass []ListBook
 	for _, s := range a {
@@ -277,14 +271,24 @@ func processBook(s string) string {
 
 
 		if tempString == "" {
-			tempString = processBookPerCategory(s, datapass)
+
+			process := processBookPerCategory(s, datapass)
+
+			if process == "" {}else{
+				tempString = process
+			}
+
 		}else{
-			tempString = tempString + " " + processBookPerCategory(s, datapass)
+
+			process := processBookPerCategory(s, datapass)
+
+			if process == "" {}else{
+				tempString = tempString + " " + process
+			}
+
 		}
 	}
-
-	// tempString = checkStringIfEmpty(c6) + checkStringIfEmpty(c7) + checkStringIfEmpty(c0) + checkStringIfEmpty(c9) + checkStringIfEmpty(c4) + checkStringIfEmpty(c8) + checkStringIfEmpty(c1) + checkStringIfEmpty(c2) + checkStringIfEmpty(c5) + checkStringIfEmpty(c3)
-
+	// End of iteration
 
 	return string(tempString)
 
@@ -299,7 +303,7 @@ func processBookPerCategory(category int, data []ListBook) string {
 		return data[i].Size > data[j].Size
 	})
 
-	fmt.Println(data)
+	// fmt.Println(data)
 
 	returnString := ""
 
@@ -319,142 +323,148 @@ func processBookPerCategory(category int, data []ListBook) string {
 				generate = append(generate, data[i])
 				groupedSlices[data[i].Title] = generate
 
-				sort.Slice(groupedSlices[data[i].Title], func(i, j int) bool {
+				sort.Sort(doMultiSort(groupedSlices[data[i].Title]))
 
-					return groupedSlices[data[i].Title][i].Size > groupedSlices[data[i].Title][j].Size
-				}) // Sort the groupped Title by their size from the largest to the smalest
+				// sort.Slice(groupedSlices[data[i].Title], func(i, j int) bool {
 
-			}else{ // If Title not in array SliceKeys, then create one and add the item to it
+					// 	return groupedSlices[data[i].Title][i].Size > groupedSlices[data[i].Title][j].Size
+					// }) // Sort the groupped Title by their size from the largest to the smalest
 
-				sliceKeys[data[i].Title] = data[i].Title
-				generate := []ListBook{}
-				generate = append(generate, data[i])
-				groupedSlices[data[i].Title] = generate
+				}else{ // If Title not in array SliceKeys, then create one and add the item to it
 
-				sort.Slice(groupedSlices[data[i].Title], func(i, j int) bool {
+					sliceKeys[data[i].Title] = data[i].Title
+					generate := []ListBook{}
+					generate = append(generate, data[i])
+					groupedSlices[data[i].Title] = generate
 
-					return groupedSlices[data[i].Title][i].Size > groupedSlices[data[i].Title][j].Size
-				})
+					sort.Sort(doMultiSort(groupedSlices[data[i].Title]))
 
-			}
-			fmt.Println("===")
-			fmt.Println(groupedSlices[data[i].Title])
-			fmt.Println("===")
-		}
+					// sort.Slice(groupedSlices[data[i].Title], func(i, j int) bool {
 
-		// fmt.Println(sliceKeys)
-		countedSimilarData := 1
-		nextDataTitle := ""
+						// 	return groupedSlices[data[i].Title][i].Size > groupedSlices[data[i].Title][j].Size
+						// })
 
-		fmt.Println(groupedSlices)
-		for i := range groupedSlices { // Iterate each array and it's subarray (Grouped item by Title) to create an single string
-
-			fmt.Println("vvvvvvvvvvvv")
-			fmt.Println(i)
-			fmt.Println("^^^^^^^^^^^^")
-
-			num := 0
-			for ii := range groupedSlices[i] {
-				
-
-				// fmt.Println(groupedSlices[i][ii])
-
-				// c6, c7, c0, c9, c4, c8, c1, c2, c5, c3
-				itemData := groupedSlices[i][ii]
-				tempCateg := strconv.Itoa(itemData.Category)
-				tempSize := strconv.Itoa(itemData.Size)
-				tempArrange := tempCateg + itemData.Title + tempSize
-				// fmt.Println(len(groupedSlices[i]))
-				if (num+1) >= len(groupedSlices[i]) { 
-					if countedSimilarData <= 2 {
-						if returnString == ""{
-							returnString = tempArrange
-						}else{
-							returnString = returnString + " " + tempArrange
-						}
-						countedSimilarData = 1
-					}else{
-						countedSimilarData = 1
 					}
-					// fmt.Println("LAST")
-				}else{
+					// fmt.Println("===")
+					// fmt.Println(groupedSlices[data[i].Title])
+					// fmt.Println("===")
+				}
 
-					itemDataNext := groupedSlices[i][ii+1]
-					tempCategNext := strconv.Itoa(itemDataNext.Category)
-					// tempSizeNext := strconv.Itoa(itemDataNext.Size)
-					nextDataTitle = tempCategNext + itemDataNext.Title
-					tempArrangeRN := tempCateg + itemData.Title
+				// fmt.Println(sliceKeys)
+				countedSimilarData := 1
+				nextDataTitle := ""
 
-					// fmt.Println(tempArrangeRN)
-					// fmt.Println(nextDataTitle)
+				// fmt.Println(groupedSlices)
+				for i := range groupedSlices { // Iterate the main parent of passed array
+
+					// fmt.Println("vvvvvvvvvvvv")
+					// fmt.Println(i)
+					// fmt.Println("^^^^^^^^^^^^")
+
+					num := 0
+					for ii := range groupedSlices[i] { // Iterate it's subarray (Grouped item by Title) to create an single string
 
 
-					if nextDataTitle == tempArrangeRN {
-						if countedSimilarData <= 2 {
-							if returnString == ""{
-								returnString = tempArrange
-							}else{
-								returnString = returnString + " " + tempArrange
-							}
-							countedSimilarData++
-							// fmt.Println("DUP")
-						}else{
-							countedSimilarData = 1
-							// fmt.Println("NON DUP")
-						}
-					}else{
+						// fmt.Println(groupedSlices[i][ii])
 
-						if countedSimilarData <= 2 {
-							if returnString == ""{
-								returnString = tempArrange
-							}else{
-								returnString = returnString + " " + tempArrange
-							}
-							nextDataTitle = itemDataNext.Title
-
-							if nextDataTitle == tempArrangeRN {
-								countedSimilarData++
+						// c6, c7, c0, c9, c4, c8, c1, c2, c5, c3
+						itemData := groupedSlices[i][ii]
+						tempCateg := strconv.Itoa(itemData.Category)
+						tempSize := strconv.Itoa(itemData.Size)
+						tempArrange := tempCateg + itemData.Title + tempSize
+						// fmt.Println(len(groupedSlices[i]))
+						if (num+1) >= len(groupedSlices[i]) { 
+							if countedSimilarData <= 2 {
+								if returnString == ""{
+									returnString = tempArrange
+								}else{
+									returnString = returnString + " " + tempArrange
+								}
+								countedSimilarData = 1
 							}else{
 								countedSimilarData = 1
 							}
-							// fmt.Println("NON DUP 2 POS")
+							// fmt.Println("LAST")
 						}else{
-							// fmt.Println("NON DUP 2 NET")
-							countedSimilarData = 1
+
+							itemDataNext := groupedSlices[i][ii+1]
+							tempCategNext := strconv.Itoa(itemDataNext.Category)
+							// tempSizeNext := strconv.Itoa(itemDataNext.Size)
+							nextDataTitle = tempCategNext + itemDataNext.Title
+							tempArrangeRN := tempCateg + itemData.Title
+
+							// fmt.Println(tempArrangeRN)
+							// fmt.Println(nextDataTitle)
+
+
+							if nextDataTitle == tempArrangeRN {
+								if countedSimilarData <= 2 {
+									if returnString == ""{
+										returnString = tempArrange
+									}else{
+										returnString = returnString + " " + tempArrange
+									}
+									countedSimilarData++
+									// fmt.Println("DUP")
+								}else{
+									countedSimilarData = 1
+									// fmt.Println("NON DUP")
+								}
+							}else{
+
+								if countedSimilarData <= 2 {
+									if returnString == ""{
+										returnString = tempArrange
+									}else{
+										returnString = returnString + " " + tempArrange
+									}
+									nextDataTitle = itemDataNext.Title
+
+									if nextDataTitle == tempArrangeRN {
+										countedSimilarData++
+									}else{
+										countedSimilarData = 1
+									}
+									// fmt.Println("NON DUP 2 POS")
+								}else{
+									// fmt.Println("NON DUP 2 NET")
+									countedSimilarData = 1
+								}
+
+
+							}
+
+							// fmt.Println(countedSimilarData)
+
+
 						}
 
+						num++
 
 					}
 
-					// fmt.Println(countedSimilarData)
-
-
 				}
 
-				num++
+			}else{
+				returnString = ""
+			}
 
+			return returnString
+		}
+		// End of phase 2
+
+		// Function for checking whether string is empty or not
+		func checkStringIfEmpty(s string) string {
+
+			if len(s) > 0 {
+				return " " + s
+			}else{
+				return ""
 			}
 
 		}
 
-	}
-
-	return returnString
-}
-// End of phase 2
-
-// Function for checking whether string is empty or not
-func checkStringIfEmpty(s string) string {
-
-	if len(s) > 0 {
-		return " " + s
-	}else{
-		return ""
-	}
-
-}
-
-// Function for converting bytes to string
-func bytesToString(data byte) string {
-	return string(byte(data))
-}
+		// Function for converting bytes to string
+		func bytesToString(data byte) string {
+			return string(byte(data))
+		}
